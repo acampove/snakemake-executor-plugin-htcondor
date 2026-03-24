@@ -1098,7 +1098,7 @@ class Executor(RemoteExecutor):
         ) = self._get_exec_args_and_transfer_files(job, needs_transfer)
 
         # Creating submit dictionary which is passed to htcondor.Submit
-        submit_dict = {
+        submit_dict : dict[str,str | int] = {
             "executable": job_exec,
             "arguments": job_args,
             "log": join(self.jobDir, "$(ClusterId).log"),
@@ -1223,16 +1223,25 @@ class Executor(RemoteExecutor):
         # Name the jobs in the queue something that tells us what the job is
         submit_dict["batch_name"] = f"{job.name}-{job.jobid}"
 
+        _plain_submit_keys = {"accounting_group", "accounting_group_user"}
+
         # Check any custom classads
-        for key in job.resources.keys():
-            if key.startswith("classad_"):
-                classad_key = "+" + key.removeprefix("classad_")
-                value = job.resources.get(key)
-                # If the value is a string, HTCondor requires it to be quoted.
-                if isinstance(value, str):
-                    submit_dict[classad_key] = f'"{value}"'
-                else:
-                    submit_dict[classad_key] = value
+        for key, value in job.resources.items():
+            if not key.startswith("classad_"):
+                continue
+
+            if isinstance(value, int):
+                submit_dict[key] = value
+                continue
+
+            stripped_key = key.removeprefix("classad_")
+            if stripped_key in _plain_submit_keys:
+                submit_dict[stripped_key] = value
+                continue
+
+            classad_key = "+" + stripped_key
+            # If the value is a string, HTCondor requires it to be quoted.
+            submit_dict[classad_key] = f'"{value}"'
 
         # Log resource requests with human-readable units
         self._log_resource_requests(submit_dict)
