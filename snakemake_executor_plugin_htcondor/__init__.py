@@ -1242,7 +1242,7 @@ class Executor(RemoteExecutor):
         submit_description = htcondor.Submit(submit_dict)
 
         # Client for HTCondor Schedduler
-        schedd = htcondor.Schedd()
+        schedd = get_schedd() 
 
         # Submitting job to HTCondor
         try:
@@ -1381,7 +1381,7 @@ class Executor(RemoteExecutor):
 
         results = {}
         try:
-            schedd = htcondor.Schedd()
+            schedd = get_schedd() 
             # Build a constraint that matches any of the cluster IDs
             # e.g., "ClusterId == 123 || ClusterId == 456 || ClusterId == 789"
             constraint_parts = [f"ClusterId == {cid}" for cid in cluster_ids]
@@ -1456,7 +1456,7 @@ class Executor(RemoteExecutor):
 
         results = {}
         try:
-            schedd = htcondor.Schedd()
+            schedd = get_schedd() 
             # Build a constraint that matches any of the cluster IDs
             constraint_parts = [f"ClusterId == {cid}" for cid in cluster_ids]
             constraint = " || ".join(constraint_parts)
@@ -1974,7 +1974,7 @@ class Executor(RemoteExecutor):
         # This method is called when Snakemake is interrupted.
 
         if active_jobs:
-            schedd = htcondor.Schedd()
+            schedd = get_schedd() 
             # schedd.act() with a list expects job specs as "clusterID.procID" strings
             job_ids = [f"{current_job.external_jobid}.0" for current_job in active_jobs]
             self.logger.debug(f"Cancelling HTCondor jobs: {job_ids}")
