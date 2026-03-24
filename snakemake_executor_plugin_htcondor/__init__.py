@@ -1,7 +1,13 @@
+
+import re
+import sys
+import time
+import traceback
+import htcondor2 as htcondor
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, AsyncGenerator, Optional, Dict
-import time
 from snakemake_interface_executor_plugins.executors.base import SubmittedJobInfo
 from snakemake_interface_executor_plugins.executors.remote import RemoteExecutor
 from snakemake_interface_executor_plugins.settings import (
@@ -13,14 +19,10 @@ from snakemake_interface_executor_plugins.jobs import (
 )
 from snakemake_interface_common.exceptions import WorkflowError  # noqa
 
-import htcondor2 as htcondor
 from htcondor2 import JobEventLog, JobEventType
-import traceback
 from os.path import join, isabs, relpath, normpath, exists
 from os import makedirs, sep
-import re
-import sys
-
+from .schedduler import get_schedd
 
 class JobStatus(Enum):
     """Enumeration of possible job statuses.
