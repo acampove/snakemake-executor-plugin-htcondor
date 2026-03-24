@@ -1,5 +1,5 @@
 import os
-import htcondor
+import htcondor2 as     htcondor
 from functools import cache
 
 @cache
