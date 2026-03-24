@@ -5,9 +5,9 @@ name: Publish to PyPI
 # Version is derived automatically from the git tag via poetry-dynamic-versioning.
 # The `version` field in pyproject.toml is a placeholder and does not need to be updated.
 on:
-  release:
-    types:
-      - released  # fires when a prerelease is promoted to a full release
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   # ── Build the sdist + wheel ─────────────────────────────────────────────────
